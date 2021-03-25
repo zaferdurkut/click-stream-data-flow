@@ -29,7 +29,7 @@ class ClickStreamProducer:
         self.kafka_producer.flush()
 
     def main(self) -> None:
-        sleep(int(os.getenv("PRODUCER_DATA_ROOT_DIRECTORY", 60)))
+        sleep(int(os.getenv("PRODUCER_DOCKER_INITIALIZE_WAIT_TIME", 60)))
 
         csv_file_paths = ClickStreamProducer.get_csv_data(
             data_directory_from_root=os.getenv("PRODUCER_DATA_ROOT_DIRECTORY")
