@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    restart: always
+    ports:
+      - "2181:2181"
+      - "19092:19092"
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_CREATE_TOPICS: "click_stream"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    links:
+      - zookeeper
+    depends_on:
+      - zookeeper
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: always
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+      JVM_OPTS: -Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify
+    depends_on:
+      - kafka
+
+  click_stream_consumer:
+    image: python:3.7.0
+    restart: always
+    env_file:
+      - click_stream.env
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - ./.docker/click_stream_consumer/.cache:/root/.cache
+    command: bash -c "pip install -r /app/requirements.txt && cd /app/ && python -u  consumer/click_stream_consumer.py"
+    depends_on:
+      - kafka
+
+  click_stream_producer:
+    image: python:3.7.0
+    restart: always
+    env_file:
+      - click_stream.env
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - ./.docker/click_stream_producer/.cache:/root/.cache
+#    command: bash -c "pip install -r /app/requirements.txt && cd /app/ && python -u  producer/click_stream_producer.py"
+    command: bash -c "pip install -r /app/requirements.txt && cd /app/ && tail -f /dev/null"
+    depends_on:
+      - kafka
+      - click_stream_consumer
