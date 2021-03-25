@@ -8,13 +8,6 @@ import avro.io
 logging.basicConfig(level=logging.INFO)
 
 
-def read_data(msg: str, schema: dict):
-    bytes_reader = io.BytesIO(msg.value)
-    decoder = avro.io.BinaryDecoder(bytes_reader)
-    reader = avro.io.DatumReader(schema)
-    return reader.read(decoder)
-
-
 class ClickStreamConsumer:
     """Listen Kafka for messages and write to Cassandra."""
 
@@ -40,7 +33,12 @@ class ClickStreamConsumer:
         for msg in self.kafka_consumer:
             # data = read_data(msg, self.kafka_schema)
             logging.info(msg)
-            print("aldim")
 
+    @staticmethod
+    def read_data(msg: str, schema: dict):
+        bytes_reader = io.BytesIO(msg.value)
+        decoder = avro.io.BinaryDecoder(bytes_reader)
+        reader = avro.io.DatumReader(schema)
+        return reader.read(decoder)
 
 ClickStreamConsumer().run()

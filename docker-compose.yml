@@ -15,11 +15,13 @@ services:
       - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_ADVERTISED_HOST_NAME: kafka
       KAFKA_ADVERTISED_PORT: 9092
-      KAFKA_CREATE_TOPICS: "click_stream"
+      KAFKA_CREATE_TOPICS: "click_stream:1:1,click_stream_metadata:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - ./.docker/kafka/var/run/docker.sock:/var/run/docker.sock
     links:
       - zookeeper
     depends_on:
