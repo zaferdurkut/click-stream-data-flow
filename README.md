@@ -12,7 +12,7 @@ The Project is clickstream data flow using python procuder and python consumer (
 - Consumer application writes to apache parquet.
 ![Kafdrop](document/click_stream_architecture.png)
 
-### Environment Variables
+### Environment Variables on click_stream.env file
 
 ```dotenv
 PYTHONPATH=. # 
