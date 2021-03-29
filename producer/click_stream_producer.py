@@ -30,6 +30,7 @@ class ClickStreamProducer:
 
     def main(self) -> None:
         sleep(int(os.getenv("PRODUCER_DOCKER_INITIALIZE_WAIT_TIME", 60)))
+        wait_time = int(os.getenv("PRODUCER_ITEM_WAIT_TIME", 0))
 
         csv_file_paths = ClickStreamProducer.get_csv_data(
             data_directory_from_root=os.getenv("PRODUCER_DATA_ROOT_DIRECTORY")
@@ -42,6 +43,7 @@ class ClickStreamProducer:
                     file_path_from_root=csv_file_path
                 )
                 for item in click_dataframe.to_dict(orient="records"):
+                    sleep(wait_time)
                     self.send(topic=self.topic, item=item)
             elif (
                 os.getenv("PRODUCER_CLICK_METADATA_CSV_DATA_PREFIX") in csv_file_path
@@ -49,7 +51,9 @@ class ClickStreamProducer:
                 click_metadata_dataframe = ClickStreamProducer.read_csv(
                     file_path_from_root=csv_file_path
                 )
+                sleep(int(os.getenv("PRODUCER_ITEM_WAIT_TIME", 0)))
                 for item in click_metadata_dataframe.to_dict(orient="records"):
+                    sleep(wait_time)
                     self.send(topic=self.metadata_topic, item=item)
             else:
                 logging.warning(csv_file_path + " data is not matched prefix")
