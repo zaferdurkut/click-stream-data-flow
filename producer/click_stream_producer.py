@@ -51,7 +51,6 @@ class ClickStreamProducer:
                 click_metadata_dataframe = ClickStreamProducer.read_csv(
                     file_path_from_root=csv_file_path
                 )
-                sleep(int(os.getenv("PRODUCER_ITEM_WAIT_TIME", 0)))
                 for item in click_metadata_dataframe.to_dict(orient="records"):
                     sleep(wait_time)
                     self.send(topic=self.metadata_topic, item=item)
