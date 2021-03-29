@@ -1,5 +1,5 @@
 # Click Stream Data Flow
-The Project is clickstream data flow using kafka, spark, and parquet.
+The Project is clickstream data flow using python procuder and python consumer (pyspark),  kafka, spark, hive, and parquet.
 ## Architecture Approach
 - Data directory includes clickstream data as clickstream and clickstream metadata.
 - Example data in the data directory. This project supports multiple files. only data files should be same prefix for the naming.
